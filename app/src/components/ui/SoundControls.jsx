@@ -9,7 +9,7 @@ const soundOptions = [
 
 export function SoundControls({ enabled, preset, onToggle, onPresetChange }) {
   return (
-    <div className="glass-panel flex flex-col gap-3 rounded-3xl border-white/10 p-4 text-sm text-slate-300 sm:min-w-[220px]">
+    <div className="glass-panel flex h-full w-full min-w-0 flex-col gap-3 rounded-3xl border-white/10 p-4 text-sm text-slate-300">
       <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.3em] text-[rgb(var(--secondary-rgb))]">
         <Waves className="h-4 w-4" />
         Sound FX

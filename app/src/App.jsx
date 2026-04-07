@@ -455,7 +455,7 @@ export default function App() {
               </div>
             </div>
 
-            <div className="flex flex-wrap items-center gap-3">
+            <div className="flex flex-wrap items-center gap-3 xl:justify-end">
               <NeonButton
                 onClick={() => {
                   playSound('refresh');
@@ -496,49 +496,62 @@ export default function App() {
             </div>
           </div>
 
-          <div className="grid gap-3 xl:grid-cols-[minmax(0,1fr)_auto_auto_auto]">
-            <div className="glass-panel flex flex-col gap-4 rounded-[30px] border-white/10 p-4">
-              <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-                <div className="flex flex-wrap gap-2">
-                  <NeonButton
-                    icon={LayoutGrid}
-                    variant="ghost"
-                    active={state.viewMode === 'grid'}
-                    onClick={() => handleViewChange('grid')}
-                  >
-                    Vista Grid
-                  </NeonButton>
-                  <NeonButton
-                    icon={List}
-                    variant="ghost"
-                    active={state.viewMode === 'list'}
-                    onClick={() => handleViewChange('list')}
-                  >
-                    Vista Lista
-                  </NeonButton>
+          <div className="grid gap-4 xl:grid-cols-12">
+            <div className="glass-panel flex min-w-0 flex-col gap-4 rounded-[30px] border-white/10 p-4 xl:col-span-7 2xl:col-span-8">
+              <div className="grid gap-4 xl:grid-cols-[220px_minmax(0,1fr)] xl:items-start">
+                <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-1">
+                  <div className="grid grid-cols-2 gap-2">
+                    <NeonButton
+                      icon={LayoutGrid}
+                      variant="ghost"
+                      active={state.viewMode === 'grid'}
+                      onClick={() => handleViewChange('grid')}
+                      className="justify-center"
+                    >
+                      Vista Grid
+                    </NeonButton>
+                    <NeonButton
+                      icon={List}
+                      variant="ghost"
+                      active={state.viewMode === 'list'}
+                      onClick={() => handleViewChange('list')}
+                      className="justify-center"
+                    >
+                      Vista Lista
+                    </NeonButton>
+                  </div>
+
+                  <div className="rounded-[24px] border border-white/10 bg-white/5 px-4 py-3 text-sm text-slate-300">
+                    <div className="text-xs font-semibold uppercase tracking-[0.3em] text-emerald-200/80">
+                      Última sincronía
+                    </div>
+                    <div className="mt-2 text-base text-white break-words">
+                      {state.lastUpdated ? formatDateTime(state.lastUpdated) : 'Pendiente'}
+                    </div>
+                  </div>
                 </div>
 
-                <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
-                  <label className="flex flex-col gap-2 text-xs font-semibold uppercase tracking-[0.3em] text-slate-300 xl:min-w-[260px]">
+                <div className="grid min-w-0 gap-3 lg:grid-cols-[minmax(0,1.4fr)_minmax(150px,0.8fr)_minmax(150px,0.8fr)]">
+                  <label className="flex min-w-0 flex-col gap-2 text-xs font-semibold uppercase tracking-[0.3em] text-slate-300">
                     Scan por título y tags
-                    <div className="relative">
+                    <div className="relative min-w-0">
                       <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[rgb(var(--accent-rgb))]" />
                       <input
                         type="text"
                         value={state.searchQuery}
                         onChange={handleSearchChange}
                         placeholder="steam, rpg, bundle, neon..."
-                        className="h-12 w-full rounded-2xl border border-white/10 bg-white/5 pl-11 pr-4 text-sm text-white outline-none transition focus:border-[rgba(var(--accent-rgb),0.5)]"
+                        className="h-12 w-full min-w-0 rounded-2xl border border-white/10 bg-white/5 pl-11 pr-4 text-sm text-white outline-none transition focus:border-[rgba(var(--accent-rgb),0.5)]"
                       />
                     </div>
                   </label>
 
-                  <label className="flex flex-col gap-2 text-xs font-semibold uppercase tracking-[0.3em] text-slate-300">
+                  <label className="flex min-w-0 flex-col gap-2 text-xs font-semibold uppercase tracking-[0.3em] text-slate-300">
                     Plataforma
                     <select
                       value={state.platformFilter}
                       onChange={handlePlatformChange}
-                      className="h-12 rounded-2xl border border-white/10 bg-white/5 px-4 text-sm text-white outline-none transition focus:border-cyan-400/50"
+                      className="h-12 min-w-0 rounded-2xl border border-white/10 bg-white/5 px-4 text-sm text-white outline-none transition focus:border-cyan-400/50"
                     >
                       <option value="all">Todas</option>
                       {platforms.map((platform) => (
@@ -549,31 +562,22 @@ export default function App() {
                     </select>
                   </label>
 
-                  <label className="flex flex-col gap-2 text-xs font-semibold uppercase tracking-[0.3em] text-slate-300">
+                  <label className="flex min-w-0 flex-col gap-2 text-xs font-semibold uppercase tracking-[0.3em] text-slate-300">
                     Estado
                     <select
                       value={state.statusFilter}
                       onChange={handleStatusChange}
-                      className="h-12 rounded-2xl border border-white/10 bg-white/5 px-4 text-sm text-white outline-none transition focus:border-cyan-400/50"
+                      className="h-12 min-w-0 rounded-2xl border border-white/10 bg-white/5 px-4 text-sm text-white outline-none transition focus:border-cyan-400/50"
                     >
                       <option value="all">Todos</option>
                       <option value="active">Activos</option>
                       <option value="expired">Expirados</option>
                     </select>
                   </label>
-
-                  <div className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-slate-300">
-                    <div className="text-xs font-semibold uppercase tracking-[0.3em] text-emerald-200/80">
-                      Última sincronía
-                    </div>
-                    <div className="mt-2 text-base text-white">
-                      {state.lastUpdated ? formatDateTime(state.lastUpdated) : 'Pendiente'}
-                    </div>
-                  </div>
                 </div>
               </div>
 
-              <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+              <div className="grid gap-3 grid-cols-2 2xl:grid-cols-4">
                 <StatPanel label="Activos" value={stats.active} tone="cyan" />
                 <StatPanel label="Expirados" value={stats.expired} tone="red" />
                 <StatPanel label="Drops nuevos" value={stats.newGames} tone="violet" />
@@ -581,14 +585,16 @@ export default function App() {
               </div>
             </div>
 
-            <CursorSwitcher value={state.cursorPreset} onChange={handleCursorChange} />
-            <ThemeSwitcher value={state.themePreset} onChange={handleThemeChange} />
-            <SoundControls
-              enabled={state.soundEnabled}
-              preset={state.soundPreset}
-              onToggle={handleSoundToggle}
-              onPresetChange={handleSoundPresetChange}
-            />
+            <div className="grid gap-4 md:grid-cols-2 xl:col-span-5 xl:grid-cols-1 2xl:col-span-4 2xl:grid-cols-3">
+              <CursorSwitcher value={state.cursorPreset} onChange={handleCursorChange} />
+              <ThemeSwitcher value={state.themePreset} onChange={handleThemeChange} />
+              <SoundControls
+                enabled={state.soundEnabled}
+                preset={state.soundPreset}
+                onToggle={handleSoundToggle}
+                onPresetChange={handleSoundPresetChange}
+              />
+            </div>
           </div>
 
           {error ? (
