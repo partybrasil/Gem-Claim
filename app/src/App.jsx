@@ -585,7 +585,7 @@ export default function App() {
               </div>
             </div>
 
-            <div className="grid gap-4 md:grid-cols-2 xl:col-span-5 xl:grid-cols-1 2xl:col-span-4 2xl:grid-cols-3">
+            <div className="grid gap-4 md:grid-cols-2 xl:col-span-5 xl:grid-cols-1 2xl:col-span-4 2xl:grid-cols-1">
               <CursorSwitcher value={state.cursorPreset} onChange={handleCursorChange} />
               <ThemeSwitcher value={state.themePreset} onChange={handleThemeChange} />
               <SoundControls
