@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { fetchGiveaways } from '../services/gameService';
+import { fetchGiveaways, normalizeClaimUrl } from '../services/gameService';
 import { isExpired } from '../utils/date';
 
 const STORAGE_KEY = 'gem-claim-store-v2';
@@ -42,9 +42,22 @@ function loadState() {
       return initialState;
     }
 
+    const parsedState = JSON.parse(rawState);
+
     return {
       ...initialState,
-      ...JSON.parse(rawState)
+      ...parsedState,
+      games: Array.isArray(parsedState.games)
+        ? parsedState.games.map((game) => ({
+            ...game,
+            claimUrl: normalizeClaimUrl({
+              title: game.title,
+              open_giveaway_url: game.claimUrl,
+              open_giveaway: game.openGiveaway,
+              gamerpower_url: game.gamerpowerUrl
+            })
+          }))
+        : initialState.games
     };
   } catch {
     return initialState;

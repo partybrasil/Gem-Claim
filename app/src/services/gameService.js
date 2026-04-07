@@ -1,6 +1,7 @@
 import { mockGiveaways } from '../data/mockGiveaways';
 
 const API_URL = 'https://www.gamerpower.com/api/giveaways';
+const GAMERPOWER_HOME_URL = 'https://www.gamerpower.com';
 
 function splitPlatforms(platforms) {
   return String(platforms ?? '')
@@ -33,6 +34,39 @@ function buildTags(game, platforms) {
   return [...new Set(['free', String(game.type ?? 'game').toLowerCase(), ...platforms.map((platform) => platform.toLowerCase()), ...keywords])];
 }
 
+function slugifyGiveawayTitle(title) {
+  return String(title ?? '')
+    .toLowerCase()
+    .normalize('NFKD')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}
+
+function isGenericGamerPowerUrl(url) {
+  const normalizedUrl = String(url ?? '').trim().replace(/\/$/, '');
+  return normalizedUrl === GAMERPOWER_HOME_URL;
+}
+
+export function normalizeClaimUrl(game) {
+  const candidates = [game.open_giveaway_url, game.open_giveaway, game.gamerpower_url]
+    .map((url) => String(url ?? '').trim())
+    .filter(Boolean);
+
+  const preferredUrl = candidates.find((url) => !isGenericGamerPowerUrl(url));
+
+  if (preferredUrl) {
+    return preferredUrl;
+  }
+
+  const slug = slugifyGiveawayTitle(game.title);
+
+  if (slug) {
+    return `${GAMERPOWER_HOME_URL}/open/${slug}`;
+  }
+
+  return GAMERPOWER_HOME_URL;
+}
+
 export function normalizeGame(game) {
   const platforms = splitPlatforms(game.platforms);
 
@@ -43,7 +77,7 @@ export function normalizeGame(game) {
     image: game.image ?? game.thumbnail,
     thumbnail: game.thumbnail ?? game.image,
     worth: game.worth ?? '$0.00',
-    claimUrl: game.open_giveaway_url ?? 'https://www.gamerpower.com',
+    claimUrl: normalizeClaimUrl(game),
     publishedDate: game.published_date ?? null,
     endDate: game.end_date ?? null,
     platforms,
