@@ -12,6 +12,8 @@ const initialState = {
   secretModeEnabled: false,
   activity: {
     refreshCount: 0,
+    lastRefreshDurationMs: 0,
+    bestRefreshDurationMs: 0,
     purgeCount: 0,
     codexOpenCount: 0,
     keySaveCount: 0,
@@ -117,9 +119,11 @@ export function useGemClaimStore() {
   const refreshGames = useCallback(async () => {
     setIsRefreshing(true);
     setError('');
+    const refreshStartedAt = performance.now();
 
     try {
       const { games, source } = await fetchGiveaways();
+      const refreshDurationMs = performance.now() - refreshStartedAt;
 
       setState((previousState) => {
         const existingIds = new Set(previousState.games.map((game) => game.id));
@@ -136,14 +140,26 @@ export function useGemClaimStore() {
           games: nextGames,
           activity: {
             ...previousState.activity,
-            refreshCount: previousState.activity.refreshCount + 1
+            refreshCount: previousState.activity.refreshCount + 1,
+            lastRefreshDurationMs: refreshDurationMs,
+            bestRefreshDurationMs:
+              previousState.activity.bestRefreshDurationMs === 0
+                ? refreshDurationMs
+                : Math.min(previousState.activity.bestRefreshDurationMs, refreshDurationMs)
           },
           source,
           lastUpdated: new Date().toISOString()
         };
       });
+
+      return {
+        durationMs: refreshDurationMs,
+        source,
+        count: games.length
+      };
     } catch (refreshError) {
       setError(refreshError instanceof Error ? refreshError.message : 'No fue posible actualizar los giveaways.');
+      throw refreshError;
     } finally {
       setIsRefreshing(false);
     }

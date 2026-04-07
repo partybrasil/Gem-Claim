@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import { CheatSheet } from './components/CheatSheet';
 import { GameCard } from './components/GameCard';
+import { PerformanceAuditPanel } from './components/PerformanceAuditPanel';
 import { Badge } from './components/ui/Badge';
 import { CursorSwitcher } from './components/ui/CursorSwitcher';
 import { NeonButton } from './components/ui/NeonButton';
@@ -27,6 +28,7 @@ import { useUiAudio } from './hooks/useUiAudio';
 import { SECRET_IDS } from './utils/codex';
 import { applyCursorPreset } from './utils/cursors';
 import { formatDateTime, isExpired } from './utils/date';
+import { runPerformanceAudit } from './utils/performanceAudit';
 import { applyThemePreset } from './utils/themes';
 
 const KONAMI_SEQUENCE = ['arrowup', 'arrowup', 'arrowdown', 'arrowdown', 'arrowleft', 'arrowright', 'arrowleft', 'arrowright', 'b', 'a'];
@@ -83,6 +85,8 @@ export default function App() {
   const [isCheatSheetOpen, setIsCheatSheetOpen] = useState(false);
   const [isPrintTrapOpen, setIsPrintTrapOpen] = useState(false);
   const [isKonamiRewardOpen, setIsKonamiRewardOpen] = useState(false);
+  const [isPerformanceAuditRunning, setIsPerformanceAuditRunning] = useState(false);
+  const [performanceAuditResult, setPerformanceAuditResult] = useState(null);
   const konamiProgressRef = useRef([]);
   const previousCheatSheetOpenRef = useRef(false);
   const { playSound } = useUiAudio(state.soundEnabled, state.soundPreset);
@@ -272,6 +276,30 @@ export default function App() {
 
   function closeKonamiReward() {
     setIsKonamiRewardOpen(false);
+  }
+
+  async function handleRunPerformanceAudit() {
+    if (isPerformanceAuditRunning) {
+      return;
+    }
+
+    setIsPerformanceAuditRunning(true);
+
+    try {
+      const auditResult = await runPerformanceAudit({
+        refreshBenchmark: async () => {
+          playSound('refresh');
+          return refreshGames();
+        }
+      });
+
+      setPerformanceAuditResult(auditResult);
+      playSound(auditResult.score >= 88 ? 'save' : 'switch');
+    } catch {
+      playSound('purge');
+    } finally {
+      setIsPerformanceAuditRunning(false);
+    }
   }
 
   return (
@@ -679,7 +707,19 @@ export default function App() {
             </p>
           </motion.div>
         ) : null}
+
+        <PerformanceAuditPanel
+          result={performanceAuditResult}
+          isRunning={isPerformanceAuditRunning}
+          onRun={handleRunPerformanceAudit}
+        />
       </main>
+
+      <footer className="relative z-10 border-t border-white/10 bg-slate-950/55 backdrop-blur-xl">
+        <div className="mx-auto max-w-7xl px-4 py-6 text-center text-xs font-semibold uppercase tracking-[0.28em] text-slate-500 sm:px-6 lg:px-8">
+          Gem-Claim Tactical Footer · usa el probe para medir si el reactor necesita optimización real.
+        </div>
+      </footer>
 
       <button
         type="button"
